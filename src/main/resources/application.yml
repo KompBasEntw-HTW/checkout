@@ -1,0 +1,52 @@
+quarkus:
+  smallrye-openapi:
+    security-scheme: oidc
+    security-scheme-name: Bearer Authentication
+    oidc-open-id-connect-url: http://localhost/management/keycloak/realms/exe/.well-known/openid-configuration
+  oidc:
+    auth-server-url: http://keycloak:8080/management/keycloak/realms/exe
+    client-id: ${KEYCLOAK_CHECKOUT_CLIENT_ID}
+    credentials:
+      secret: ${KEYCLOAK_CHECKOUT_CLIENT_SECRET}
+    tls:
+      verification: none
+  keycloak:
+    policy-enforcer:
+      enable: true
+      paths:
+        1:
+          path: /q/openapi
+          enforcement-mode: disabled
+  datasource:
+    db-kind: postgresql
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    jdbc:
+      url: jdbc:postgresql://checkoutdb:5432/checkout
+  hibernate-orm:
+    database:
+      generation: drop-and-create
+  package:
+    type: mutable-jar
+  live-reload:
+    password: livereloadpassword
+    url: http://localhost:8083
+  # redis:
+  # hosts: redit://cache:6379
+"%prod":
+  quarkus:
+    smallrye-openapi:
+      # hardcoding hostname here
+      oidc-open-id-connect-url: https://exe.dlugoschvincent.de/management/keycloak/realms/exe/.well-known/openid-configuration
+# rabbitmq-host: rabbitmq
+# rabbitmq-port: 5672
+# rabbitmq-username: ${RABBITMQ_DEFAULT_USER}
+# rabbitmq-password: ${RABBITMQ_DEFAULT_PASS}
+# mp:
+#   messaging:
+#     incoming:
+#       stock:
+#         connector: smallrye-rabbitmq
+#         auto-acknowledgement: true
+#         queue:
+#           name: stock
