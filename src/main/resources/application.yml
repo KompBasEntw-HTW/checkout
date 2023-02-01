@@ -24,6 +24,8 @@ quarkus:
     jdbc:
       url: jdbc:postgresql://checkoutdb:5432/checkout
   hibernate-orm:
+    log:
+      sql: true
     database:
       generation: drop-and-create
   package:
