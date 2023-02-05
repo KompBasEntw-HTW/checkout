@@ -9,7 +9,7 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 
 import de.extremecoffee.checkout.Address;
-import de.extremecoffee.checkout.Order;
+import de.extremecoffee.checkout.CoffeeOrder;
 import de.extremecoffee.dtos.PlaceOrderDto;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -31,10 +31,10 @@ public class CheckoutController {
 
   @GET
   @Path("/orders")
-  @APIResponse(responseCode = "200", description = "Returns list of orders of logged in user", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = SchemaType.ARRAY, implementation = Order.class)))
+  @APIResponse(responseCode = "200", description = "Returns list of orders of logged in user", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = SchemaType.ARRAY, implementation = CoffeeOrder.class)))
   @APIResponse(responseCode = "404", description = "No orders found")
   public Response getOrders() {
-    List<Order> userOrders = checkoutService.getOrders(identity.getPrincipal().getName());
+    List<CoffeeOrder> userOrders = checkoutService.getOrders(identity.getPrincipal().getName());
     if (userOrders == null) {
       return Response.status(404).build();
     }
@@ -52,7 +52,15 @@ public class CheckoutController {
   @Path("addAddress")
   @APIResponse()
   public Response addAddress(Address address) {
-    var addressId = checkoutService.addAddress(address);
+    var addressId = checkoutService.addAddress(address, identity.getPrincipal().getName());
     return Response.ok(addressId).build();
+  }
+
+  @GET
+  @Path("getAddresses")
+  @APIResponse(responseCode = "200", description = "Returns List of all saved user addresses")
+  public Response getAddresses() {
+    var addresses = checkoutService.getAddresses(identity.getPrincipal().getName());
+    return Response.ok(addresses).build();
   }
 }

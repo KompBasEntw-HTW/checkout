@@ -13,7 +13,6 @@ import jakarta.persistence.ManyToOne;
 
 @Entity
 public class OrderItem extends PanacheEntityBase {
-
   @Id
   @GeneratedValue
   @Schema(readOnly = true)
@@ -26,8 +25,9 @@ public class OrderItem extends PanacheEntityBase {
   @ManyToOne
   @JsonbTransient
   @JoinColumn(name = "order_id")
-  public Order order;
+  public CoffeeOrder order;
 
   public Integer quantity;
 
+  public Double subTotal;
 }

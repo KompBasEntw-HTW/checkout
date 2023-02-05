@@ -24,8 +24,8 @@ quarkus:
     jdbc:
       url: jdbc:postgresql://checkoutdb:5432/checkout
   hibernate-orm:
-    log:
-      sql: true
+    # log:
+      # sql: true
     database:
       generation: drop-and-create
   package:
@@ -40,15 +40,19 @@ quarkus:
     smallrye-openapi:
       # hardcoding hostname here
       oidc-open-id-connect-url: https://exe.dlugoschvincent.de/management/keycloak/realms/exe/.well-known/openid-configuration
-# rabbitmq-host: rabbitmq
-# rabbitmq-port: 5672
-# rabbitmq-username: ${RABBITMQ_DEFAULT_USER}
-# rabbitmq-password: ${RABBITMQ_DEFAULT_PASS}
-# mp:
-#   messaging:
-#     incoming:
-#       stock:
-#         connector: smallrye-rabbitmq
-#         auto-acknowledgement: true
-#         queue:
-#           name: stock
+rabbitmq-host: rabbitmq
+rabbitmq-port: 5672
+rabbitmq-username: ${RABBITMQ_DEFAULT_USER}
+rabbitmq-password: ${RABBITMQ_DEFAULT_PASS}
+mp:
+  messaging:
+    incoming:
+      order-validation:
+        connector: smallrye-rabbitmq
+        queue:
+          name: order-validation
+    outgoing:
+      order-validation-request:
+        connector: smallrye-rabbitmq
+        exchange:
+          name: order-validation-request

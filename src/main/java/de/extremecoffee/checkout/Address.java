@@ -1,5 +1,7 @@
 package de.extremecoffee.checkout;
 
+import java.util.List;
+
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
@@ -22,4 +24,10 @@ public class Address extends PanacheEntityBase {
   public String country;
   public String state;
   public String postalCode;
+
+  public String userName;
+
+  public static List<Address> getUserAddresses(String userName) {
+    return list("userName", userName);
+  }
 }

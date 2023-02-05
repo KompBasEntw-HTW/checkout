@@ -15,7 +15,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
 @Entity
-public class Order extends PanacheEntityBase {
+public class CoffeeOrder extends PanacheEntityBase {
   @Id
   @GeneratedValue
   public Long id;
@@ -31,7 +31,7 @@ public class Order extends PanacheEntityBase {
   @OneToMany(mappedBy = "order")
   public Set<OrderItem> orderItems = new HashSet<OrderItem>();
 
-  public static List<Order> getUserOrders(String userName) {
+  public static List<CoffeeOrder> getUserOrders(String userName) {
     return list("userName", userName);
   }
 }
