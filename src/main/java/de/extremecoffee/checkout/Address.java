@@ -25,8 +25,6 @@ public class Address extends PanacheEntityBase {
   public String state;
   public String postalCode;
 
-  public String userName;
-
   public static List<Address> getUserAddresses(String userName) {
     return list("userName", userName);
   }

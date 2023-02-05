@@ -1,5 +1,6 @@
 package de.extremecoffee;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
@@ -22,7 +23,6 @@ import jakarta.ws.rs.core.Response;
 
 @Path("/")
 @SecurityRequirement(name = "Bearer Authentication")
-@Authenticated
 public class CheckoutController {
   @Inject
   CheckoutService checkoutService;
@@ -31,6 +31,7 @@ public class CheckoutController {
 
   @GET
   @Path("/orders")
+  @Authenticated
   @APIResponse(responseCode = "200", description = "Returns list of orders of logged in user", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(type = SchemaType.ARRAY, implementation = CoffeeOrder.class)))
   @APIResponse(responseCode = "404", description = "No orders found")
   public Response getOrders() {
@@ -42,25 +43,34 @@ public class CheckoutController {
   }
 
   @POST
-  @Path("placeOrder")
+  @Path("/placeOrder")
   public Response placeOrder(PlaceOrderDto placeOrderDto) {
-    var order = checkoutService.placeOrder(placeOrderDto, identity.getPrincipal().getName());
+    String userName = placeOrderDto.userEmail;
+    if (!identity.getPrincipal().getName().isEmpty()) {
+      userName = identity.getPrincipal().getName();
+    }
+    var order = checkoutService.placeOrder(placeOrderDto, userName);
     return Response.ok(order).build();
   }
 
   @POST
-  @Path("addAddress")
+  @Path("/addAddress")
   @APIResponse()
   public Response addAddress(Address address) {
-    var addressId = checkoutService.addAddress(address, identity.getPrincipal().getName());
+    var addressId = checkoutService.addAddress(address);
     return Response.ok(addressId).build();
   }
 
   @GET
-  @Path("getAddresses")
+  @Path("/getAddresses")
+  @Authenticated
   @APIResponse(responseCode = "200", description = "Returns List of all saved user addresses")
   public Response getAddresses() {
-    var addresses = checkoutService.getAddresses(identity.getPrincipal().getName());
+    var orders = checkoutService.getOrders(identity.getPrincipal().getName());
+    var addresses = new HashSet<Address>();
+    for (var order : orders) {
+      addresses.add(order.address);
+    }
     return Response.ok(addresses).build();
   }
 }

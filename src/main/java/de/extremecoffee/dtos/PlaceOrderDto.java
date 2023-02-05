@@ -6,4 +6,6 @@ public class PlaceOrderDto {
   public List<ItemDto> items;
 
   public Long addressId;
+
+  public String userEmail;
 }

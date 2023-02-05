@@ -15,8 +15,17 @@ quarkus:
       enable: true
       paths:
         1:
+          name: Add address
+          path: /addAddress
+          enforcement-mode: DISABLED
+        2:
+          name: Place order
+          path: /placeOrder
+          enforcement-mode: DISABLED
+        3:
+          name: OpenAPI
           path: /q/openapi
-          enforcement-mode: disabled
+          enforcement-mode: DISABLED
   datasource:
     db-kind: postgresql
     username: ${POSTGRES_USER}

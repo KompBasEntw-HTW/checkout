@@ -29,8 +29,7 @@ public class CheckoutService {
   }
 
   @Transactional
-  Long addAddress(Address address, String userName) {
-    address.userName = userName;
+  Long addAddress(Address address) {
     address.persist();
     return address.id;
   }
