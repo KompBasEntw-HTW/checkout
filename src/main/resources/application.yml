@@ -34,7 +34,7 @@ quarkus:
       url: jdbc:postgresql://checkoutdb:5432/checkout
   hibernate-orm:
     # log:
-      # sql: true
+    # sql: true
     database:
       generation: drop-and-create
   package:
@@ -42,8 +42,8 @@ quarkus:
   live-reload:
     password: livereloadpassword
     url: http://localhost:8083
-  # redis:
-  # hosts: redit://cache:6379
+    # redis:
+    # hosts: redit://cache:6379
 "%prod":
   quarkus:
     smallrye-openapi:
