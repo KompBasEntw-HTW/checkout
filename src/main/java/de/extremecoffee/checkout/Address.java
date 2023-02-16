@@ -18,7 +18,7 @@ public class Address extends PanacheEntityBase {
   public String firstName;
   public String lastName;
   public String street;
-  public Integer streetNumber;
+  public String streetNumber;
   public String additionalInformation;
   public String city;
   public String country;
