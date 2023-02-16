@@ -1,15 +1,21 @@
 package de.extremecoffee.checkout;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import java.util.List;
+import java.util.UUID;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 @Entity
 public class Address extends PanacheEntityBase {
-  @Schema(readOnly = true) @Id @GeneratedValue public Long id;
+  @Id
+  @GeneratedValue
+  @Column(columnDefinition = "uuid")
+  @Schema(readOnly = true)
+  public UUID id;
   public String firstName;
   public String lastName;
   public String street;

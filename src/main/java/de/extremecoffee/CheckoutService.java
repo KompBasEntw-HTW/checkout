@@ -15,6 +15,8 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
@@ -29,13 +31,13 @@ public class CheckoutService {
   }
 
   @Transactional
-  Long addAddress(Address address) {
+  UUID addAddress(Address address) {
     address.persist();
     return address.id;
   }
 
   @Transactional
-  CoffeeOrder placeOrder(PlaceOrderDto placeOrderDto, String userName) {
+  CoffeeOrder placeOrder(PlaceOrderDto placeOrderDto) {
     var order = new CoffeeOrder();
     if (!verifyItems(placeOrderDto.items)) {
       return null;
@@ -58,8 +60,11 @@ public class CheckoutService {
     }
 
     order.address = Address.findById(placeOrderDto.addressId);
-    order.userName = userName;
+    order.userName = placeOrderDto.userEmail;
 
+    if(!order.userName.equals(order.address.userName)){
+      throw new UnauthorizedException();
+    }
     order.persist();
 
     var itemsToValidate = new ArrayList<ItemToValidateDto>();

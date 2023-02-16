@@ -16,11 +16,11 @@ quarkus:
       paths:
         1:
           name: Add address
-          path: /addAddress
+          path: /addresses/add
           enforcement-mode: DISABLED
         2:
           name: Place order
-          path: /placeOrder
+          path: /orders/place
           enforcement-mode: DISABLED
         3:
           name: OpenAPI

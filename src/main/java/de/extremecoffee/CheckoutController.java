@@ -57,28 +57,35 @@ public class CheckoutController {
   @APIResponse(responseCode = "400", description = "Order malformed.")
   public Response
   placeOrder(PlaceOrderDto placeOrderDto) {
-    String userName = placeOrderDto.userEmail;
-    if (!identity.getPrincipal().getName().isEmpty()) {
-      userName = identity.getPrincipal().getName();
-    }
-    if (userName.isEmpty()) {
+    if (!identity.isAnonymous()) {
+      placeOrderDto.userEmail = identity.getPrincipal().getName();
+    };
+    if (placeOrderDto.userEmail.isEmpty()) {
       return Response.status(400).build();
     }
-    var order = checkoutService.placeOrder(placeOrderDto, userName);
+    CoffeeOrder order;
+    try {
+      order = checkoutService.placeOrder(placeOrderDto);
+    } catch (UnauthorizedException e) {
+      return Response.status(403).build();
+    }
     return Response.ok(order).build();
   }
 
   @POST
-  @Path("/addAddress")
+  @Path("/addresses/add")
   @APIResponse(responseCode = "200", description = "Creates address.")
   @APIResponse(responseCode = "404", description = "Address malformed.")
   public Response addAddress(Address address) {
+    if (!identity.isAnonymous()) {
+      address.userName = identity.getPrincipal().getName();
+    }
     var addressId = checkoutService.addAddress(address);
     return Response.ok(addressId).build();
   }
 
   @GET
-  @Path("/getAddresses")
+  @Path("/addresses")
   @Authenticated
   @APIResponse(
       responseCode = "200",
@@ -87,11 +94,8 @@ public class CheckoutController {
                                           implementation = Address.class)))
   public Response
   getAddresses() {
-    var orders = checkoutService.getOrders(identity.getPrincipal().getName());
-    var addresses = new HashSet<Address>();
-    for (var order : orders) {
-      addresses.add(order.address);
-    }
+    var addresses =
+        checkoutService.getAddresses(identity.getPrincipal().getName());
     return Response.ok(addresses).build();
   }
 
