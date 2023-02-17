@@ -29,4 +29,7 @@ public class CoffeeOrder extends PanacheEntityBase {
     return list("userName", userName);
   }
   public Boolean canceled = false;
+
+  public Double subTotal;
+  public Boolean valid = false;
 }

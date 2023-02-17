@@ -57,6 +57,7 @@ mp:
   messaging:
     incoming:
       order-validation:
+        auto-acknowledgement: true
         connector: smallrye-rabbitmq
         queue:
           name: order-validation

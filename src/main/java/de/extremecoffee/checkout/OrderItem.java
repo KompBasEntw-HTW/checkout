@@ -27,7 +27,4 @@ public class OrderItem extends PanacheEntityBase {
 
   public Integer quantity;
 
-  public Double subTotal;
-
-  public Boolean valid = false;
 }

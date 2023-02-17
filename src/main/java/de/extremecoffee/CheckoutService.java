@@ -30,6 +30,10 @@ public class CheckoutService {
     return CoffeeOrder.getUserOrders(userName);
   }
 
+  boolean orderIsValid(Long orderId){
+    CoffeeOrder coffeeOrder = CoffeeOrder.findById(orderId);
+    return coffeeOrder.valid;
+  }
   @Transactional
   UUID addAddress(Address address) {
     address.persist();

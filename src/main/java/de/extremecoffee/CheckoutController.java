@@ -99,6 +99,14 @@ public class CheckoutController {
     return Response.ok(addresses).build();
   }
 
+  @GET
+  @Path("/orders/{orderId}/valid")
+  public Response orderIsValid(@Param Long orderId){
+    boolean isValid = checkoutService.orderIsValid(orderId); 
+    return Response.ok(isValid).build();
+  }
+
+
   @POST
   @Path("/orders/{orderId}/cancel")
   @APIResponse(

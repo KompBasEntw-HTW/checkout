@@ -1,5 +1,6 @@
 package de.extremecoffee;
 
+import de.extremecoffee.checkout.CoffeeOrder;
 import de.extremecoffee.dtos.OrderValidationDto;
 import io.quarkus.logging.Log;
 import io.smallrye.common.annotation.Blocking;
@@ -15,6 +16,17 @@ public class OrderValidationReciever {
   @Blocking
   public void recieveOrderValidation(JsonObject p) {
     OrderValidationDto orderValidationDto = p.mapTo(OrderValidationDto.class);
+
     Log.info("Recieved order validation Response:" + orderValidationDto);
+
+    CoffeeOrder coffeeOrder = CoffeeOrder.findById(orderValidationDto.id());
+    if (orderValidationDto.isValid()) {
+      coffeeOrder.subTotal = orderValidationDto.subTotal();
+      coffeeOrder.valid = true;
+    } else {
+      coffeeOrder.subTotal = 0.0;
+      coffeeOrder.valid = false;
+      coffeeOrder.canceled = true;
+    }
   }
 }
