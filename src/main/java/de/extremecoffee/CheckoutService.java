@@ -16,7 +16,6 @@ import jakarta.ws.rs.NotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
@@ -30,8 +29,11 @@ public class CheckoutService {
     return CoffeeOrder.getUserOrders(userName);
   }
 
-  boolean orderIsValid(Long orderId){
+  boolean orderIsValid(Long orderId) throws NotFoundException {
     CoffeeOrder coffeeOrder = CoffeeOrder.findById(orderId);
+    if(coffeeOrder == null){
+      throw new NotFoundException("Order to validate not found");
+    }
     return coffeeOrder.valid;
   }
   @Transactional
@@ -66,7 +68,7 @@ public class CheckoutService {
     order.address = Address.findById(placeOrderDto.addressId);
     order.userName = placeOrderDto.userEmail;
 
-    if(!order.userName.equals(order.address.userName)){
+    if (!order.userName.equals(order.address.userName)) {
       throw new UnauthorizedException();
     }
     order.persist();

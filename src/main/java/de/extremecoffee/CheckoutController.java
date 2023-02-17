@@ -6,6 +6,7 @@ import de.extremecoffee.dtos.PlaceOrderDto;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.UnauthorizedException;
 import io.quarkus.security.identity.SecurityIdentity;
+import io.smallrye.config.ConfigValidationException.Problem;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -13,7 +14,6 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.HashSet;
 import java.util.List;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -101,11 +101,24 @@ public class CheckoutController {
 
   @GET
   @Path("/orders/{orderId}/valid")
-  public Response orderIsValid(@Param Long orderId){
-    boolean isValid = checkoutService.orderIsValid(orderId); 
-    return Response.ok(isValid).build();
+  @APIResponse(
+      responseCode = "200",
+      description = "Returns wheater order is valid or not",
+      content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                         schema = @Schema(implementation = Boolean.class)))
+  @APIResponse(
+      responseCode = "404", description = "Order with given id not found",
+      content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                         schema = @Schema(implementation = String.class)))
+  public Response
+  orderIsValid(@Param Long orderId) {
+    try {
+      boolean isValid = checkoutService.orderIsValid(orderId);
+      return Response.ok(isValid).build();
+    } catch (NotFoundException e) {
+      return Response.status(404).entity(e.getMessage()).build();
+    }
   }
-
 
   @POST
   @Path("/orders/{orderId}/cancel")
