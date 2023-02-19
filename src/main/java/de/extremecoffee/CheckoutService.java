@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
@@ -61,6 +62,7 @@ public class CheckoutService {
       OrderItem orderItem = new OrderItem();
       orderItem.item = item;
       orderItem.quantity = itemDto.quantity;
+      orderItem.coffeeOrder = order;
       orderItem.persist();
       order.orderItems.add(orderItem);
     }
@@ -89,10 +91,7 @@ public class CheckoutService {
   }
 
   private boolean verifyItems(List<ItemDto> items) {
-    if (!items.isEmpty()) {
-      return true;
-    }
-    return false;
+    return !items.isEmpty();
   }
 
   List<Address> getAddresses(String userName) {
@@ -106,7 +105,7 @@ public class CheckoutService {
     if (order == null) {
       throw new NotFoundException();
     }
-    if (userName != order.userName) {
+    if (!Objects.equals(userName, order.userName)) {
       throw new UnauthorizedException();
     }
     order.canceled = true;
