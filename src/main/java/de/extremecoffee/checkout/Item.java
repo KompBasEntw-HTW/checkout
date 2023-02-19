@@ -5,6 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 
+import java.util.Objects;
+
 @Entity
 @IdClass(ItemId.class)
 public class Item extends PanacheEntityBase {
@@ -15,9 +17,6 @@ public class Item extends PanacheEntityBase {
   @Override
   public boolean equals(Object o) {
     Item item = (Item)o;
-    if (item.bagSizeId == this.bagSizeId && item.productId == this.productId) {
-      return true;
-    }
-    return false;
+    return Objects.equals(item.bagSizeId, this.bagSizeId) && Objects.equals(item.productId, this.productId);
   }
 }

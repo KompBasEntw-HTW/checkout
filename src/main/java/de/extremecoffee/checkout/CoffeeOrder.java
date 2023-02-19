@@ -1,11 +1,9 @@
 package de.extremecoffee.checkout;
 
+import de.extremecoffee.constants.ShippingMethods;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -22,7 +20,7 @@ public class CoffeeOrder extends PanacheEntityBase {
 
   @ManyToOne public Address address;
 
-  @OneToMany(mappedBy = "order")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "coffeeOrder")
   public Set<OrderItem> orderItems = new HashSet<OrderItem>();
 
   public static List<CoffeeOrder> getUserOrders(String userName) {
@@ -32,4 +30,7 @@ public class CoffeeOrder extends PanacheEntityBase {
 
   public Double subTotal;
   public Boolean valid = false;
+
+  @Enumerated
+  public ShippingMethods shippingMethod;
 }

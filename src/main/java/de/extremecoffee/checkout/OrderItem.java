@@ -16,14 +16,14 @@ public class OrderItem extends PanacheEntityBase {
 
   @ManyToOne
   @JoinColumns({
-    @JoinColumn(name = "bagsizeid"), @JoinColumn(name = "productid")
+    @JoinColumn(name = "bagsize_id"), @JoinColumn(name = "product_id")
   })
   public Item item;
 
   @ManyToOne
   @JsonbTransient
-  @JoinColumn(name = "order_id")
-  public CoffeeOrder order;
+  @JoinColumn(name = "coffeeorder_id")
+  public CoffeeOrder coffeeOrder;
 
   public Integer quantity;
 
