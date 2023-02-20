@@ -1,6 +1,7 @@
 package de.extremecoffee;
 
 import de.extremecoffee.checkout.CoffeeOrder;
+import de.extremecoffee.checkout.Constants;
 import de.extremecoffee.dtos.OrderValidationDto;
 import io.quarkus.logging.Log;
 import io.smallrye.common.annotation.Blocking;
@@ -22,6 +23,12 @@ public class OrderValidationReciever {
     CoffeeOrder coffeeOrder = CoffeeOrder.findById(orderValidationDto.id());
     if (orderValidationDto.isValid()) {
       coffeeOrder.subTotal = orderValidationDto.subTotal();
+      coffeeOrder.tax = orderValidationDto.subTotal() * Constants.TAX_RATE;
+      Integer shippingCosts = coffeeOrder.shippingMethod.basePrice;
+      if(coffeeOrder.subTotal > Constants.ORDER_DISCOUND_THRESHHOLD){
+        shippingCosts = coffeeOrder.shippingMethod.reducedPrice;
+      }
+      coffeeOrder.total = coffeeOrder.tax + coffeeOrder.subTotal + shippingCosts;
       coffeeOrder.valid = true;
     } else {
       coffeeOrder.subTotal = 0.0;

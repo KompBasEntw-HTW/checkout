@@ -46,6 +46,8 @@ quarkus:
     # hosts: redit://cache:6379
 "%prod":
   quarkus:
+    hibernate-orm:
+      sql-load-script: import.sql
     smallrye-openapi:
       # hardcoding hostname here
       oidc-open-id-connect-url: https://exe.dlugoschvincent.de/management/keycloak/realms/exe/.well-known/openid-configuration

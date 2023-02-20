@@ -1,9 +1,7 @@
 package de.extremecoffee;
 
-import de.extremecoffee.checkout.Address;
-import de.extremecoffee.checkout.CoffeeOrder;
-import de.extremecoffee.checkout.Item;
-import de.extremecoffee.checkout.OrderItem;
+import de.extremecoffee.checkout.*;
+import de.extremecoffee.checkout.enums.ShippingMethods;
 import de.extremecoffee.dtos.ItemDto;
 import de.extremecoffee.dtos.ItemToValidateDto;
 import de.extremecoffee.dtos.OrderValidationRequestDto;
@@ -13,10 +11,12 @@ import io.quarkus.security.UnauthorizedException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
@@ -32,11 +32,12 @@ public class CheckoutService {
 
   boolean orderIsValid(Long orderId) throws NotFoundException {
     CoffeeOrder coffeeOrder = CoffeeOrder.findById(orderId);
-    if(coffeeOrder == null){
+    if (coffeeOrder == null) {
       throw new NotFoundException("Order to validate not found");
     }
     return coffeeOrder.valid;
   }
+
   @Transactional
   UUID addAddress(Address address) {
     address.persist();
@@ -70,6 +71,11 @@ public class CheckoutService {
     order.address = Address.findById(placeOrderDto.addressId);
     order.userName = placeOrderDto.userEmail;
 
+    if (placeOrderDto.shippingMethod.equals(ShippingMethods.EXPRESS_SHIPPING)) {
+      order.shippingMethod = ShippingMethod.findById("express");
+    } else if (placeOrderDto.shippingMethod.equals(ShippingMethods.STANDARD_SHIPPING)) {
+      order.shippingMethod = ShippingMethod.findById("standard");
+    }
     if (!order.userName.equals(order.address.userName)) {
       throw new UnauthorizedException();
     }
@@ -78,11 +84,11 @@ public class CheckoutService {
     var itemsToValidate = new ArrayList<ItemToValidateDto>();
     for (var itemDto : placeOrderDto.items) {
       var itemToValidate = new ItemToValidateDto(
-          itemDto.itemId.bagSizeId, itemDto.itemId.productId, itemDto.quantity);
+              itemDto.itemId.bagSizeId, itemDto.itemId.productId, itemDto.quantity);
       itemsToValidate.add(itemToValidate);
     }
     var orderValidationRequest = new OrderValidationRequestDto(
-        itemsToValidate.toArray(new ItemToValidateDto[0]), order.id);
+            itemsToValidate.toArray(new ItemToValidateDto[0]), order.id);
 
     Log.info("Requesting order validation:" + orderValidationRequest);
     requestOrderValidationEmitter.send(orderValidationRequest);
@@ -100,7 +106,7 @@ public class CheckoutService {
 
   @Transactional
   public CoffeeOrder cancelOrder(Long orderId, String userName)
-      throws UnauthorizedException, NotFoundException {
+          throws UnauthorizedException, NotFoundException {
     CoffeeOrder order = CoffeeOrder.findById(orderId);
     if (order == null) {
       throw new NotFoundException();
@@ -111,6 +117,9 @@ public class CheckoutService {
     order.canceled = true;
     return order;
   }
+
   // TODO
-  private Double calculateSubTotal() { return 0d; }
+  private Double calculateSubTotal() {
+    return 0d;
+  }
 }
