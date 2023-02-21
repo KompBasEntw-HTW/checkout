@@ -1,4 +1,4 @@
-package de.extremecoffee.checkout;
+package de.extremecoffee.checkout.entities;
 
 import java.io.Serializable;
 

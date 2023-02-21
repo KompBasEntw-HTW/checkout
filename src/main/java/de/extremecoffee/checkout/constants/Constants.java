@@ -1,4 +1,4 @@
-package de.extremecoffee.checkout;
+package de.extremecoffee.checkout.constants;
 
 public class Constants {
   public static final Double TAX_RATE = 0.19;

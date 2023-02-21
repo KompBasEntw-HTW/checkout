@@ -1,14 +1,12 @@
-package de.extremecoffee;
+package de.extremecoffee.checkout.services;
 
-import de.extremecoffee.checkout.*;
 import de.extremecoffee.checkout.enums.ShippingMethods;
-import de.extremecoffee.dtos.ItemDto;
-import de.extremecoffee.dtos.ItemToValidateDto;
-import de.extremecoffee.dtos.OrderValidationRequestDto;
-import de.extremecoffee.dtos.PlaceOrderDto;
+import de.extremecoffee.checkout.dtos.*;
+import de.extremecoffee.checkout.entities.*;
 import io.quarkus.logging.Log;
 import io.quarkus.security.UnauthorizedException;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
@@ -20,17 +18,21 @@ import java.util.UUID;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
+import javax.management.InvalidAttributeValueException;
+
 @ApplicationScoped
 public class CheckoutService {
 
+  @Inject
+  PriceService priceService;
   @Channel("order-validation-request")
   Emitter<OrderValidationRequestDto> requestOrderValidationEmitter;
 
-  List<CoffeeOrder> getOrders(String userName) {
+  public List<CoffeeOrder> getOrders(String userName) {
     return CoffeeOrder.getUserOrders(userName);
   }
 
-  boolean orderIsValid(Long orderId) throws NotFoundException {
+  public boolean orderIsValid(Long orderId) throws NotFoundException {
     CoffeeOrder coffeeOrder = CoffeeOrder.findById(orderId);
     if (coffeeOrder == null) {
       throw new NotFoundException("Order to validate not found");
@@ -39,16 +41,16 @@ public class CheckoutService {
   }
 
   @Transactional
-  UUID addAddress(Address address) {
+  public UUID addAddress(Address address) {
     address.persist();
     return address.id;
   }
 
   @Transactional
-  CoffeeOrder placeOrder(PlaceOrderDto placeOrderDto) {
+  public CoffeeOrder placeOrder(PlaceOrderDto placeOrderDto) throws InvalidAttributeValueException {
     var order = new CoffeeOrder();
     if (!verifyItems(placeOrderDto.items)) {
-      return null;
+      throw new InvalidAttributeValueException();
     }
 
     for (var itemDto : placeOrderDto.items) {
@@ -100,7 +102,7 @@ public class CheckoutService {
     return !items.isEmpty();
   }
 
-  List<Address> getAddresses(String userName) {
+  public List<Address> getAddresses(String userName) {
     return Address.getUserAddresses(userName);
   }
 
@@ -118,8 +120,21 @@ public class CheckoutService {
     return order;
   }
 
-  // TODO
-  private Double calculateSubTotal() {
-    return 0d;
+  @Transactional
+  public void completeOrder(OrderValidationResponseDto orderValidationResponseDto){
+    CoffeeOrder coffeeOrder = CoffeeOrder.findById(orderValidationResponseDto.id());
+    if (orderValidationResponseDto.isValid()) {
+      var subTotal = orderValidationResponseDto.subTotal();
+      var tax = priceService.calculateTax(subTotal);
+      var shippingCosts = priceService.getShippingCosts(subTotal,coffeeOrder.shippingMethod);
+      coffeeOrder.subTotal = subTotal;
+      coffeeOrder.tax = tax;
+      coffeeOrder.total = tax + subTotal + shippingCosts;
+      coffeeOrder.valid = true;
+    } else {
+      coffeeOrder.subTotal = 0.0;
+      coffeeOrder.valid = false;
+      coffeeOrder.canceled = true;
+    }
   }
 }
