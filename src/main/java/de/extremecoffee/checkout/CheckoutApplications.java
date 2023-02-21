@@ -1,4 +1,4 @@
-package de.extremecoffee;
+package de.extremecoffee.checkout;
 
 import jakarta.ws.rs.core.Application;
 import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;

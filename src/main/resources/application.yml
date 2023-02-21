@@ -1,4 +1,6 @@
 quarkus:
+  test:
+    continuous-testing: enabled
   smallrye-openapi:
     security-scheme: oidc
     security-scheme-name: Bearer Authentication
@@ -68,3 +70,21 @@ mp:
         connector: smallrye-rabbitmq
         exchange:
           name: order-validation-request
+#"%test":
+#  quarkus:
+#    package:
+#      type: jar
+#    keycloak:
+#      policy-enforcer:
+#        enable: false
+#  smallrye-openapi:
+#    security-scheme: oidc
+#    security-scheme-name: Bearer Authentication
+#    oidc-open-id-connect-url: http://localhost/management/keycloak/realms/exe/.well-known/openid-configuration
+#  oidc:
+#    auth-server-url: http://keycloak:8080/management/keycloak/realms/exe
+#    client-id: test-client
+#    credentials:
+#      secret: test-secret
+#    tls:
+#      verification: none

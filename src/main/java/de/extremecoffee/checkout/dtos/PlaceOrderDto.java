@@ -1,4 +1,4 @@
-package de.extremecoffee.dtos;
+package de.extremecoffee.checkout.dtos;
 
 import de.extremecoffee.checkout.enums.ShippingMethods;
 

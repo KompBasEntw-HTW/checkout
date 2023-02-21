@@ -1,12 +1,12 @@
-package de.extremecoffee;
+package de.extremecoffee.checkout;
 
-import de.extremecoffee.checkout.Address;
-import de.extremecoffee.checkout.CoffeeOrder;
-import de.extremecoffee.dtos.PlaceOrderDto;
+import de.extremecoffee.checkout.entities.Address;
+import de.extremecoffee.checkout.entities.CoffeeOrder;
+import de.extremecoffee.checkout.dtos.PlaceOrderDto;
+import de.extremecoffee.checkout.services.CheckoutService;
 import io.quarkus.security.Authenticated;
 import io.quarkus.security.UnauthorizedException;
 import io.quarkus.security.identity.SecurityIdentity;
-import io.smallrye.config.ConfigValidationException.Problem;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -14,6 +14,7 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
 import java.util.List;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -22,10 +23,13 @@ import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
 import org.jboss.logging.annotations.Param;
 
+import javax.management.InvalidAttributeValueException;
+
 @Path("/")
 @SecurityRequirement(name = "Bearer Authentication")
 public class CheckoutController {
-  @Inject CheckoutService checkoutService;
+  @Inject
+  CheckoutService checkoutService;
   @Inject SecurityIdentity identity;
 
   @GET
@@ -68,6 +72,8 @@ public class CheckoutController {
       order = checkoutService.placeOrder(placeOrderDto);
     } catch (UnauthorizedException e) {
       return Response.status(403).build();
+    } catch (InvalidAttributeValueException e){
+      return  Response.status(400).build();
     }
     return Response.ok(order).build();
   }

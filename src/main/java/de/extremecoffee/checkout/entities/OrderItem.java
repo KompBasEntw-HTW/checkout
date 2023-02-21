@@ -1,4 +1,4 @@
-package de.extremecoffee.checkout;
+package de.extremecoffee.checkout.entities;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.json.bind.annotation.JsonbTransient;
