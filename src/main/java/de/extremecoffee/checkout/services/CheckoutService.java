@@ -121,12 +121,12 @@ public class CheckoutService {
   }
 
   @Transactional
-  public void completeOrder(OrderValidationResponseDto orderValidationResponseDto){
+  public void completeOrder(OrderValidationResponseDto orderValidationResponseDto) {
     CoffeeOrder coffeeOrder = CoffeeOrder.findById(orderValidationResponseDto.id());
     if (orderValidationResponseDto.isValid()) {
       var subTotal = orderValidationResponseDto.subTotal();
       var tax = priceService.calculateTax(subTotal);
-      var shippingCosts = priceService.getShippingCosts(subTotal,coffeeOrder.shippingMethod);
+      var shippingCosts = priceService.getShippingCosts(subTotal, coffeeOrder.shippingMethod);
       coffeeOrder.subTotal = subTotal;
       coffeeOrder.tax = tax;
       coffeeOrder.total = tax + subTotal + shippingCosts;

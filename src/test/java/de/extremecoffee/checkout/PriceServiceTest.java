@@ -7,6 +7,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
+
 @QuarkusTest
 public class PriceServiceTest {
   @Inject
@@ -37,7 +38,7 @@ public class PriceServiceTest {
   }
 
   @Test
-  public void testGetShippingCostsBasePrice(){
+  public void testGetShippingCostsBasePrice() {
     ShippingMethod shippingMethod = new ShippingMethod();
     shippingMethod.basePrice = 5;
     shippingMethod.reducedPrice = 3;
@@ -45,8 +46,9 @@ public class PriceServiceTest {
     var shippingCosts = priceService.getShippingCosts(subTotal, shippingMethod);
     Assertions.assertEquals(5, shippingCosts);
   }
+
   @Test
-  public void testGetShippingCostsReducedPrice(){
+  public void testGetShippingCostsReducedPrice() {
     ShippingMethod shippingMethod = new ShippingMethod();
     shippingMethod.basePrice = 5;
     shippingMethod.reducedPrice = 3;

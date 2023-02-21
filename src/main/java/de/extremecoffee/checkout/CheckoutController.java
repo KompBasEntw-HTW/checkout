@@ -16,6 +16,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -30,22 +31,23 @@ import javax.management.InvalidAttributeValueException;
 public class CheckoutController {
   @Inject
   CheckoutService checkoutService;
-  @Inject SecurityIdentity identity;
+  @Inject
+  SecurityIdentity identity;
 
   @GET
   @Path("/orders")
   @Authenticated
   @APIResponse(
-      responseCode = "200",
-      description = "Returns list of orders of logged in user",
-      content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                         schema = @Schema(type = SchemaType.ARRAY,
-                                          implementation = CoffeeOrder.class)))
+          responseCode = "200",
+          description = "Returns list of orders of logged in user",
+          content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                  schema = @Schema(type = SchemaType.ARRAY,
+                          implementation = CoffeeOrder.class)))
   @APIResponse(responseCode = "404", description = "No orders found")
   public Response
   getOrders() {
     List<CoffeeOrder> userOrders =
-        checkoutService.getOrders(identity.getPrincipal().getName());
+            checkoutService.getOrders(identity.getPrincipal().getName());
     if (userOrders == null) {
       return Response.status(404).build();
     }
@@ -55,15 +57,16 @@ public class CheckoutController {
   @POST
   @Path("/orders/place")
   @APIResponse(
-      responseCode = "200", description = "Places order.",
-      content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                         schema = @Schema(implementation = CoffeeOrder.class)))
+          responseCode = "200", description = "Places order.",
+          content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                  schema = @Schema(implementation = CoffeeOrder.class)))
   @APIResponse(responseCode = "400", description = "Order malformed.")
   public Response
   placeOrder(PlaceOrderDto placeOrderDto) {
     if (!identity.isAnonymous()) {
       placeOrderDto.userEmail = identity.getPrincipal().getName();
-    };
+    }
+    ;
     if (placeOrderDto.userEmail.isEmpty()) {
       return Response.status(400).build();
     }
@@ -72,8 +75,8 @@ public class CheckoutController {
       order = checkoutService.placeOrder(placeOrderDto);
     } catch (UnauthorizedException e) {
       return Response.status(403).build();
-    } catch (InvalidAttributeValueException e){
-      return  Response.status(400).build();
+    } catch (InvalidAttributeValueException e) {
+      return Response.status(400).build();
     }
     return Response.ok(order).build();
   }
@@ -94,28 +97,28 @@ public class CheckoutController {
   @Path("/addresses")
   @Authenticated
   @APIResponse(
-      responseCode = "200",
-      content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                         schema = @Schema(type = SchemaType.ARRAY,
-                                          implementation = Address.class)))
+          responseCode = "200",
+          content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                  schema = @Schema(type = SchemaType.ARRAY,
+                          implementation = Address.class)))
   public Response
   getAddresses() {
     var addresses =
-        checkoutService.getAddresses(identity.getPrincipal().getName());
+            checkoutService.getAddresses(identity.getPrincipal().getName());
     return Response.ok(addresses).build();
   }
 
   @GET
   @Path("/orders/{orderId}/valid")
   @APIResponse(
-      responseCode = "200",
-      description = "Returns wheater order is valid or not",
-      content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                         schema = @Schema(implementation = Boolean.class)))
+          responseCode = "200",
+          description = "Returns wheater order is valid or not",
+          content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                  schema = @Schema(implementation = Boolean.class)))
   @APIResponse(
-      responseCode = "404", description = "Order with given id not found",
-      content = @Content(mediaType = MediaType.TEXT_PLAIN,
-                         schema = @Schema(implementation = String.class)))
+          responseCode = "404", description = "Order with given id not found",
+          content = @Content(mediaType = MediaType.TEXT_PLAIN,
+                  schema = @Schema(implementation = String.class)))
   public Response
   orderIsValid(@Param Long orderId) {
     try {
@@ -129,14 +132,14 @@ public class CheckoutController {
   @POST
   @Path("/orders/{orderId}/cancel")
   @APIResponse(
-      responseCode = "200",
-      content = @Content(mediaType = MediaType.APPLICATION_JSON,
-                         schema = @Schema(implementation = CoffeeOrder.class)),
-      description =
-          "Cancels order so it doesnt get processed. Returns canceled order.")
+          responseCode = "200",
+          content = @Content(mediaType = MediaType.APPLICATION_JSON,
+                  schema = @Schema(implementation = CoffeeOrder.class)),
+          description =
+                  "Cancels order so it doesnt get processed. Returns canceled order.")
   @APIResponse(
-      responseCode = "403",
-      description = "User is only permitted to cancel their own orders.")
+          responseCode = "403",
+          description = "User is only permitted to cancel their own orders.")
   @APIResponse(responseCode = "404", description = "Order could not be found.")
   public Response
   cancelOrder(@Param Long orderId) {
