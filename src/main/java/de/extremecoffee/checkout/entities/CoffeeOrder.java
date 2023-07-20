@@ -33,6 +33,6 @@ public class CoffeeOrder extends PanacheEntityBase {
   public Double tax;
   public Boolean valid = false;
 
-  @OneToOne
+  @ManyToOne
   public ShippingMethod shippingMethod;
 }
