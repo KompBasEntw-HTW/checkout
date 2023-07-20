@@ -12,27 +12,27 @@ import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 public class CoffeeOrder extends PanacheEntityBase {
-  @Id
-  @GeneratedValue
-  public Long id;
-  @CreationTimestamp
-  public ZonedDateTime orderDateTime;
-  public String userName;
-  @ManyToOne
-  public Address address;
-  @OneToMany(fetch = FetchType.EAGER, mappedBy = "coffeeOrder")
-  public Set<OrderItem> orderItems = new HashSet<>();
+	@Id
+	@GeneratedValue
+	public Long id;
+	@CreationTimestamp
+	public ZonedDateTime orderDateTime;
+	public String userName;
+	@ManyToOne
+	public Address address;
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "coffeeOrder")
+	public Set<OrderItem> orderItems = new HashSet<>();
 
-  public static List<CoffeeOrder> getUserOrders(String userName) {
-    return list("userName", userName);
-  }
+	public static List<CoffeeOrder> getUserOrders(String userName) {
+		return list("userName", userName);
+	}
 
-  public Boolean canceled = false;
-  public Double subTotal;
-  public Double total;
-  public Double tax;
-  public Boolean valid = false;
+	public Boolean canceled = false;
+	public Double subTotal;
+	public Double total;
+	public Double tax;
+	public Boolean valid = false;
 
-  @ManyToOne
-  public ShippingMethod shippingMethod;
+	@ManyToOne
+	public ShippingMethod shippingMethod;
 }
