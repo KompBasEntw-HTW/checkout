@@ -6,7 +6,7 @@ quarkus:
     security-scheme-name: Bearer Authentication
     oidc-open-id-connect-url: http://localhost/management/keycloak/realms/exe/.well-known/openid-configuration
   oidc:
-    auth-server-url: http://keycloak:8080/management/keycloak/realms/exe
+    auth-server-url: https://auth.dlugoschvincent.de/realms/exe
     client-id: ${KEYCLOAK_CHECKOUT_CLIENT_ID}
     credentials:
       secret: ${KEYCLOAK_CHECKOUT_CLIENT_SECRET}
@@ -40,12 +40,13 @@ quarkus:
     database:
       generation: drop-and-create
   package:
-    type: mutable-jar
+    jar:
+      type: mutable-jar
   live-reload:
     password: livereloadpassword
     url: http://localhost:8083
-    # redis:
-    # hosts: redit://cache:6379
+  redis:
+    hosts: redis://cache:6379
 "%prod":
   quarkus:
     hibernate-orm:
