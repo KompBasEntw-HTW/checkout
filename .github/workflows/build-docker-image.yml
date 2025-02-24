@@ -1,0 +1,21 @@
+on:
+  push:
+    tags:
+      - v*
+
+name: Build docker image
+
+jobs:
+  deploy:
+    name: Build docker image
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@main
+        with:
+          token: ${{secrets.RELEASE_PLEASE_TOKEN}}
+      - name: Build image
+        run: |
+          ./gradlew build
+          docker buildx bake
+        env:
+          TAG: ${{ github.ref_name }}
